@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  flask:
+    build: ./flask
+    container_name: soap-flask
+    ports:
+      - "5000:5000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/healthz')"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+
+  opa:
+    image: openpolicyagent/opa:0.69.0
+    container_name: opa
+    depends_on:
+      flask:
+        condition: service_healthy
+    command:
+      - "run"
+      - "--server"
+      - "--config-file=/config.yaml"
+      - "/policy"
+      - "/opa-lib"
+    volumes:
+      - ./opa/config.yaml:/config.yaml:ro
+      - ./opa/policy:/policy:ro
+      - ./opa/lib:/opa-lib:ro
+    ports:
+      - "8181:8181"

@@ -1,0 +1,4 @@
+features:
+  http:
+    send:
+      enable: true
