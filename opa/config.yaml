@@ -2,3 +2,6 @@ features:
   http:
     send:
       enable: true
+
+decision_logs:
+  console: true
